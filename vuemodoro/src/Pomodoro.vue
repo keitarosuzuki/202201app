@@ -37,7 +37,7 @@
       <span> : {{ selected }} SET</span>
     </div>
     <div v-else>
-      <span>{{ selected }} SET</span>
+      <span>{{ selected }} {{ setLabel }}</span>
     </div>
 
   </div>
@@ -60,8 +60,9 @@ export default {
       stopped: true,
       reset: false,
       mute: this.muted,
-      selected: '2', //セット数初期値
-      setCount: false, //セットフラグ初期値
+      selected: '2', // セット数 初期値
+      setCount: false, // セット表示部分フラグ
+      setLabel: 'SET', // セット 文字列 0になったら消す
     };
   },
 
@@ -181,6 +182,7 @@ export default {
         AudioPlayer.playAlarm(this.mute, this.audio);
         if(this.selected == '1'){
           this.selected = "おつかれさまでした。";
+          this.setLabel = "";
           this.running = true;
           this.paused = true;
           this.reset = true;
