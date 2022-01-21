@@ -6,7 +6,7 @@
 
 <script>
 // import HelloWorld from './components/HelloWorld.vue';
-import Pomodoro from '../node_modules/vuemodoro/src/Pomodoro.vue';
+import Pomodoro from '../vuemodoro/src/Pomodoro.vue';
 
 export default {
   name: 'App',
