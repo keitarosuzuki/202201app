@@ -1,6 +1,16 @@
 <template>
-  <div class="vuemodoro" :class="vuemodoroTheme">
-    <div id="vuemodoro-label">{{pomodoroLabel}}</div>
+  <div class="vuemodoro" :class="styleSelected">
+    <div id="vuemodoro-label">
+      {{pomodoroLabel}} 
+      <span v-if="styleSelectFlag" v-on:click="styleSelectFlag = !styleSelectFlag">
+        {{styleSelected}}
+      </span>
+      <select v-else class="time-select"  v-on:change="styleSelectToggle" v-model="styleSelected">
+        <option v-for="option in styleAry" :value="option.value" :key="option.id">
+          {{ option.value }}
+        </option>
+      </select>
+    </div>
     <div id="vuemodoro-timer">
       <span id="vuemodoro-counter">{{currentTime}}</span>
     </div>
@@ -26,18 +36,16 @@
       >{{resetLabel}}</button>
     </div>
 
-    <div v-if="!setCount">
-      <select v-model="selected">
-        <option value="2">1.0h</option>
-        <option value="3">1.5h</option>
-        <option value="4">2.0h</option>
-        <option value="5">2.5h</option>
-        <option value="6">3.0h</option>
+    <div class="time-set" v-if="!setCount">
+      <select class="time-select" v-model="selected">
+        <option v-for="option in setTimeAry" :value="option.set" :key="option.id">
+          {{ option.time }} h
+        </option>
       </select>
-      <span> : {{ selected }} SET</span>
+      <span class="setcount-area"> : {{ selected }} SET</span>
     </div>
-    <div v-else>
-      <span>{{ selected }} {{ setLabel }}</span>
+    <div class="time-set" v-else>
+      <span class="setcount-area">{{ selected }} {{ setLabel }}</span>
     </div>
 
   </div>
@@ -62,14 +70,28 @@ export default {
       mute: this.muted,
       selected: '2', // セット数 初期値
       setCount: false, // セット表示部分フラグ
-      setLabel: 'SET', // セット 文字列 0になったら消す
+      setLabel: 'SET', // セット数 文字列 ← 0になったら消す
+      setTimeAry: [ // セレクトボックスを配列化
+        { time: '1.0', set: 2 },
+        { time: '1.5', set: 3 },
+        { time: '2.0', set: 4 },
+        { time: '2.5', set: 5 },
+        { time: '3.0', set: 6 },
+      ], // スタイルセレクトボックスを配列化
+      styleSelected: 'light', // スタイルセレクトボックス初期値
+      styleAry: [
+        { value:'bare' },
+        { value:'dark' },
+        { value:'light' },
+      ],
+      styleSelectFlag: true, // スタイルセレクトのフラグ
     };
   },
 
-   mounted: function() {
-     if(!this.mute)
-       this.audio = AudioPlayer.createAudio();
-   },
+  mounted: function() {
+    if(!this.mute)
+      this.audio = AudioPlayer.createAudio();
+  },
 
   props: {
     minutes: {
@@ -111,7 +133,7 @@ export default {
       validator: function(value) {
         return value === 'bare' || value === 'dark' || value === 'light';
       },
-      default: "light"
+      // default: "dark"
     }
   },
 
@@ -130,12 +152,12 @@ export default {
     isResetDisabled: function() {
       return this.reset;
     },
-    vuemodoroTheme: function() {
-      return {
-        light: this.theme === "light",
-        dark: this.theme === "dark"
-      };
-    }
+    // vuemodoroTheme: function() {
+    //   return {
+    //     light: this.theme === "light",
+    //     dark: this.theme === "dark"
+    //   };
+    // }
   },
 
   methods: {
@@ -203,7 +225,12 @@ export default {
       this.secs = this.seconds;
       this.stop();
       AudioPlayer.stopAlarm(this.audio);
-    }
+    },
+
+    // スタイルのセレクトボックス 表示切り替え
+    styleSelectToggle: function(){
+      this.styleSelectFlag = !this.styleSelectFlag
+    },
   }
 };
 </script>
@@ -328,4 +355,18 @@ export default {
   color: #999999;
 }
 /*End of Light theme*/
+
+.time-set {
+  margin-top: 5px;
+}
+
+.time-select {
+  padding: 4px;
+  font-size: 18px;
+  border-radius: 0.25rem;
+}
+
+.setcount-area {
+  font-size: 20px;
+}
 </style>
